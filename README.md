@@ -1,20 +1,16 @@
 # AppStoreRedirect
 
-A minimal React component that detects a visitor's device and automatically routes them to the right place to download your app — no libraries, no dependencies beyond React.
+A React component that allows your website to have a universal link to an app's download page. This 1 link automatically sends Android devices to your Google Play page, and IOS devices to Apple App Store. Desktop devices are shown a QR code with the same function.
 
-## What It Does
+The QR code is generated on the fly by [goqr.me's free API](https://goqr.me/api/) — no setup/key needed.
 
-- **iOS** (iPhone, iPad, iPod) → instantly redirects to your **App Store** listing
-- **Android** → instantly redirects to your **Google Play** listing
-- **Desktop / everything else** → shows a **QR code** (auto-generated from the current page URL) with a prompt to scan and download on mobile
-
-The QR code is generated on the fly by [goqr.me's free API](https://goqr.me/api/) — no setup or API key needed.
-
+There's platforms that do this for you, but they require monthly subscriptions. 
+Smart App Link is free and works forever after setup.
 ---
 
-## Customization
+## Setup
 
-There are three things to replace before using this for your own app:
+By default it links to my app and QR code, so you'll need to replace it with your pages.
 
 | What to replace | Where in the code | Replace with |
 |---|---|---|
@@ -24,6 +20,71 @@ There are three things to replace before using this for your own app:
 
 The QR code automatically points to whatever URL the redirect page is hosted at — so desktop visitors who scan it will land on that same page on their phone, which then redirects them to the right store.
 
+Afterwards just copy and paste into a code block on your website.
+
+## Adding It to Your Website
+
+### Next.js / React
+
+1. Copy `AppStoreRedirect.tsx` into your project (e.g. `app/download/page.tsx` or `pages/download.tsx`)
+2. Replace the three values noted above
+3. The component fills whatever container it's placed in — style the parent page however you like
+
+### Webflow / Framer / Squarespace (embed block)
+
+These platforms don't run React natively. Use this plain HTML version instead — paste it into a custom embed block, or host it as a standalone page:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Download</title>
+  <style>
+    body {
+      margin: 0;
+      background: #000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      font-family: sans-serif;
+      color: #fff;
+      gap: 48px;
+    }
+    #msg { font-size: 2rem; font-weight: 700; text-align: center; padding: 0 24px; }
+    #qr { display: none; width: 200px; height: 200px; border-radius: 16px; background: #fff; padding: 8px; border: 3px solid rgba(255,255,255,0.4); }
+  </style>
+</head>
+<body>
+  <div id="msg">Detecting your device...</div>
+  <img id="qr" alt="QR code to download the app" />
+  <script>
+    var ua = navigator.userAgent;
+    var msg = document.getElementById('msg');
+    var qr = document.getElementById('qr');
+
+    if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) {
+      msg.textContent = 'Redirecting to the App Store...';
+      window.location.href = 'https://apps.apple.com/us/app/YOUR-APP/idYOUR-ID'; // 👈 Replace
+    } else if (/android/i.test(ua)) {
+      msg.textContent = 'Redirecting to Google Play...';
+      window.location.href = 'https://play.google.com/store/apps/details?id=YOUR.PACKAGE.ID'; // 👈 Replace
+    } else {
+      msg.textContent = 'Scan to download YOUR APP on your phone'; // 👈 Replace
+      qr.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(window.location.href);
+      qr.style.display = 'block';
+    }
+  </script>
+</body>
+</html>
+```
+
+Host this file anywhere (Vercel, Netlify, GitHub Pages) and point your download link or QR code at it.
+
+---
 ---
 
 ## Full Code
@@ -122,71 +183,6 @@ export default function AppStoreRedirect() {
 ```
 
 ---
-
-## Adding It to Your Website
-
-### Next.js / React
-
-1. Copy `AppStoreRedirect.tsx` into your project (e.g. `app/download/page.tsx` or `pages/download.tsx`)
-2. Replace the three values noted above
-3. The component fills whatever container it's placed in — style the parent page however you like
-
-### Webflow / Framer / Squarespace (embed block)
-
-These platforms don't run React natively. Use this plain HTML version instead — paste it into a custom embed block, or host it as a standalone page:
-
-```html
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Download</title>
-  <style>
-    body {
-      margin: 0;
-      background: #000;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      font-family: sans-serif;
-      color: #fff;
-      gap: 48px;
-    }
-    #msg { font-size: 2rem; font-weight: 700; text-align: center; padding: 0 24px; }
-    #qr { display: none; width: 200px; height: 200px; border-radius: 16px; background: #fff; padding: 8px; border: 3px solid rgba(255,255,255,0.4); }
-  </style>
-</head>
-<body>
-  <div id="msg">Detecting your device...</div>
-  <img id="qr" alt="QR code to download the app" />
-  <script>
-    var ua = navigator.userAgent;
-    var msg = document.getElementById('msg');
-    var qr = document.getElementById('qr');
-
-    if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) {
-      msg.textContent = 'Redirecting to the App Store...';
-      window.location.href = 'https://apps.apple.com/us/app/YOUR-APP/idYOUR-ID'; // 👈 Replace
-    } else if (/android/i.test(ua)) {
-      msg.textContent = 'Redirecting to Google Play...';
-      window.location.href = 'https://play.google.com/store/apps/details?id=YOUR.PACKAGE.ID'; // 👈 Replace
-    } else {
-      msg.textContent = 'Scan to download YOUR APP on your phone'; // 👈 Replace
-      qr.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(window.location.href);
-      qr.style.display = 'block';
-    }
-  </script>
-</body>
-</html>
-```
-
-Host this file anywhere (Vercel, Netlify, GitHub Pages) and point your download link or QR code at it.
-
----
-
 ## License
 
 MIT — use it for anything.
