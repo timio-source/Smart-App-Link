@@ -4,8 +4,8 @@ A React component that allows your website to have a universal link to an app's 
 
 The QR code is generated on the fly by [goqr.me's free API](https://goqr.me/api/) — no setup/key needed.
 
-There's platforms that do this for you, but they require monthly subscriptions. 
-Smart App Link is free and works forever after setup.
+There's platforms that do this for you, but they require monthly subscriptions. Smart App Link is free and works forever after setup.
+
 ---
 
 ## Setup
