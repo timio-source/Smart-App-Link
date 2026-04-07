@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 
-export default function AppStoreRedirect() {
+export default function SmartAppStoreLink() {
     const [message, setMessage] = useState("Detecting your device...")
     const [isDesktop, setIsDesktop] = useState(false)
     const [qrUrl, setQrUrl] = useState("")
